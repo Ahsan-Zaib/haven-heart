@@ -1,7 +1,7 @@
 # Roadmap
 
-## Now
-- Install the owner's uploaded favicon (favicon-512_1.png) as the site icon: square copy in public/, declared in the root route head, default icon removed.
+## Done
+- Owner's uploaded icon installed as the site icon (public/favicon.png, public/apple-touch-icon.png, declared in the root route head; default icon removed).
 
 ## Waiting on the owner
 - Real contact details in src/lib/site.ts: WhatsApp number, phone, email, opening hours, service areas (all PLACEHOLDER).
