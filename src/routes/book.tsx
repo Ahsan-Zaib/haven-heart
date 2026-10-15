@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { CheckCircle2, Mail } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHero, WhatsAppButton } from "@/components/site/Layout";
 import { Field, ServicePicker, inputCls } from "@/components/site/ServicePicker";
-import { calculateQuote, fmt, getService, SITE, WA, type Frequency } from "@/lib/site";
+import { createBooking } from "@/lib/bookings.functions";
+import { calculateQuote, fmt, getService, WA, type Frequency } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/book")({
@@ -52,9 +54,21 @@ function BookPage() {
   const names = services.map((s) => getService(s)?.name).join(", ");
   const body = `Booking request\nServices: ${names}\nRequirements: ${requirements || "-"}\nFrequency: ${frequency}\nPreferred: ${date} (${time})\nName: ${d.name}\nEmail: ${d.email}\nPhone: ${d.phone}\nAddress: ${d.address}\nAccess notes: ${d.access || "-"}\nFamily contact (with permission): ${d.family || "-"}\nEstimate: ${q.priced ? fmt(q.total) : "personalised quote"}`;
 
-  const submit = () => {
-    setRef(`HH-${Date.now().toString(36).toUpperCase().slice(-6)}`);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const save = useServerFn(createBooking);
+  const [saving, setSaving] = useState(false);
+  const submit = async () => {
+    setError("");
+    setSaving(true);
+    try {
+      const res = await save({ data: { services, requirements, frequency, date, time: time as "Morning", ...d, estimate: q.priced ? fmt(q.total) : "Personalised quote" } });
+      if (!res.ok) return setError(res.error);
+      setRef(res.reference);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch {
+      setError("We couldn't save your booking. Please check your details and try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (ref) {
@@ -62,15 +76,13 @@ function BookPage() {
       <section className="container-x py-24">
         <div className="mx-auto max-w-2xl rounded-[2rem] bg-card p-10 text-center shadow-lift">
           <CheckCircle2 className="mx-auto size-12 text-gold" />
-          <h1 className="mt-4 text-4xl text-primary">One last step — send your request</h1>
-          <p className="mt-3 text-muted-foreground">Your reference is <strong className="text-primary">{ref}</strong>. Send your details to our team by email or WhatsApp and we'll confirm your appointment time.</p>
+          <h1 className="mt-4 text-4xl text-primary">Booking request received</h1>
+          <p className="mt-3 text-muted-foreground">Thank you, {d.name.split(" ")[0]}. Your reference is <strong className="text-primary">{ref}</strong>. Our team will contact you to confirm your appointment time.</p>
+          <div className="mt-6 space-y-1 text-sm text-muted-foreground"><p>{names}</p><p>{date} · {time}</p></div>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button asChild variant="hero" size="xl">
-              <a href={`mailto:${SITE.email}?subject=${encodeURIComponent(`Booking request ${ref}`)}&body=${encodeURIComponent(`Reference: ${ref}\n${body}`)}`}><Mail className="size-4" /> Send by email</a>
-            </Button>
-            <WhatsAppButton size="xl" message={`${WA.booking(ref)}\n${body}`}>Send on WhatsApp</WhatsAppButton>
+            <Button asChild variant="soft" size="lg"><Link to="/">Back to home</Link></Button>
+            <WhatsAppButton size="lg" message={WA.booking(ref)}>Questions? WhatsApp us</WhatsAppButton>
           </div>
-          <p className="mt-6 text-xs text-muted-foreground">This is a booking request, not a confirmed appointment. Times are confirmed by our team.</p>
         </div>
       </section>
     );
@@ -133,7 +145,7 @@ function BookPage() {
           {error && <p className="text-sm font-medium text-destructive">{error}</p>}
           <div className="flex justify-between">
             {step > 0 ? <Button variant="soft" size="lg" onClick={() => setStep(step - 1)}>Back</Button> : <Button asChild variant="soft" size="lg"><Link to="/quote">See pricing</Link></Button>}
-            {step < 3 ? <Button variant="hero" size="lg" onClick={next}>Continue</Button> : <Button variant="gold" size="lg" onClick={submit}>Submit Booking Request</Button>}
+            {step < 3 ? <Button variant="hero" size="lg" onClick={next}>Continue</Button> : <Button variant="gold" size="lg" onClick={submit} disabled={saving}>{saving ? "Saving…" : "Confirm Booking"}</Button>}
           </div>
         </div>
       </section>
