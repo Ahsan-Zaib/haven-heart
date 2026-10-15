@@ -8,7 +8,7 @@ import { calculateQuote, fmt, getService, PRICING, WA, type Category, type Frequ
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/quote")({
-  validateSearch: (s: Record<string, unknown>) => ({ service: typeof s.service === "string" ? s.service : undefined }),
+  validateSearch: (s: Record<string, unknown>): { service?: string } => (typeof s["service"] === "string" ? { service: s["service"] } : {}),
   head: () => ({
     meta: [
       { title: "Pricing & Instant Quote — Haven & Heart" },
