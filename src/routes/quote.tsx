@@ -131,7 +131,7 @@ function QuotePage() {
           </p>
           <div className="mt-6 grid gap-2">
             <Button asChild variant="gold" size="xl" disabled={!services.length}>
-              <Link to="/book" search={{ service: services.join(",") || undefined }}>Continue to Booking</Link>
+              <Link to="/book" search={services.length ? { service: services.join(",") } : {}}>Continue to Booking</Link>
             </Button>
             <WhatsAppButton variant="heroOutline" size="xl" message={waMsg}>Get My Quote</WhatsAppButton>
             <Button asChild variant="heroOutline" size="xl"><Link to="/contact">Request a Personalized Quote</Link></Button>
