@@ -52,7 +52,6 @@ function BookPage() {
   };
 
   const names = services.map((s) => getService(s)?.name).join(", ");
-  const body = `Booking request\nServices: ${names}\nRequirements: ${requirements || "-"}\nFrequency: ${frequency}\nPreferred: ${date} (${time})\nName: ${d.name}\nEmail: ${d.email}\nPhone: ${d.phone}\nAddress: ${d.address}\nAccess notes: ${d.access || "-"}\nFamily contact (with permission): ${d.family || "-"}\nEstimate: ${q.priced ? fmt(q.total) : "personalised quote"}`;
 
   const save = useServerFn(createBooking);
   const [saving, setSaving] = useState(false);
