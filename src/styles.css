@@ -138,3 +138,65 @@
 
 @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 @utility animate-rise { animation: rise .8s cubic-bezier(.2,.7,.2,1) both; }
+
+/* ---------- Motion & premium polish ---------- */
+:root {
+  --gradient-forest: radial-gradient(120% 90% at 85% 10%, color-mix(in oklab, var(--accent) 35%, transparent) 0%, transparent 55%), radial-gradient(90% 80% at 0% 100%, color-mix(in oklab, var(--gold) 28%, transparent) 0%, transparent 50%), linear-gradient(160deg, var(--primary), color-mix(in oklab, var(--primary) 80%, black));
+  --gradient-gold-text: linear-gradient(100deg, var(--gold), color-mix(in oklab, var(--gold) 60%, white), var(--gold));
+  --ease-out: cubic-bezier(.2,.7,.2,1);
+}
+@utility bg-forest { background-image: var(--gradient-forest); }
+@utility text-gold-shine {
+  background-image: var(--gradient-gold-text); background-size: 200% auto;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: shine 6s linear infinite;
+}
+@utility glass {
+  background: color-mix(in oklab, var(--background) 12%, transparent);
+  border: 1px solid color-mix(in oklab, var(--primary-foreground) 18%, transparent);
+  backdrop-filter: blur(14px);
+}
+@utility grain {
+  position: relative;
+  &::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .07; mix-blend-mode: overlay;
+    background-image: radial-gradient(circle at 1px 1px, var(--primary-foreground) 1px, transparent 0); background-size: 22px 22px; }
+}
+@utility link-underline {
+  position: relative;
+  &::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; border-radius: 2px; background: var(--gold);
+    transform: scaleX(0); transform-origin: right; transition: transform .35s var(--ease-out); }
+  &:hover::after, &[data-status="active"]::after { transform: scaleX(1); transform-origin: left; }
+}
+@utility btn-shine {
+  position: relative; overflow: hidden;
+  &::before { content: ""; position: absolute; inset: 0; transform: translateX(-120%) skewX(-20deg);
+    background: linear-gradient(90deg, transparent, color-mix(in oklab, white 45%, transparent), transparent); transition: transform .8s var(--ease-out); }
+  &:hover::before { transform: translateX(120%) skewX(-20deg); }
+}
+@utility img-zoom { overflow: hidden; & img { transition: transform 1.1s var(--ease-out); } &:hover img { transform: scale(1.06); } }
+
+@keyframes shine { to { background-position: 200% center; } }
+@keyframes kenburns { from { transform: scale(1.12); } to { transform: scale(1); } }
+@keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes blob { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(30px,-20px) scale(1.08); } 66% { transform: translate(-20px,20px) scale(.95); } }
+@keyframes page-in { from { opacity: 0; transform: translateY(14px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes menu-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+
+@utility animate-kenburns { animation: kenburns 14s var(--ease-out) both; }
+@utility animate-floaty { animation: floaty 6s ease-in-out infinite; }
+@utility animate-blob { animation: blob 18s ease-in-out infinite; }
+@utility animate-page { animation: page-in .7s var(--ease-out) both; }
+@utility animate-menu { animation: menu-in .3s var(--ease-out) both; }
+@utility delay-1 { animation-delay: .12s; }
+@utility delay-2 { animation-delay: .24s; }
+@utility delay-3 { animation-delay: .36s; }
+@utility delay-4 { animation-delay: .5s; }
+
+/* Scroll reveal (class added by JS so content stays visible without it) */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s var(--ease-out), transform .9s var(--ease-out); transition-delay: var(--rd, 0s); }
+.reveal.is-in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .reveal { opacity: 1; transform: none; }
+}
