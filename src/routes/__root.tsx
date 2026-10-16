@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useLocation,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
@@ -123,11 +124,37 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <SiteHeader />
-      <main>
-        <Outlet />
-      </main>
+      <PageShell />
       <SiteFooter />
       <FloatingWhatsApp />
     </QueryClientProvider>
+  );
+}
+
+const REVEAL_SEL = "main section h2, main section article, main section .card-lift, main section ol > li, main section figure, main section .reveal-me";
+
+function PageShell() {
+  const pathname = useLocation({ select: (l) => l.pathname });
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+    const els = Array.from(document.querySelectorAll<HTMLElement>(REVEAL_SEL)).filter((el) => !el.closest("[data-no-reveal]"));
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } }),
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.08 },
+    );
+    els.forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight * 0.9) return; // already visible: leave alone
+      const sibs = el.parentElement ? Array.from(el.parentElement.children) : [];
+      el.style.setProperty("--rd", `${Math.min(sibs.indexOf(el), 6) * 0.08}s`);
+      el.classList.add("reveal");
+      io.observe(el);
+    });
+    return () => io.disconnect();
+  }, [pathname]);
+  return (
+    <main key={pathname} className="animate-page">
+      <Outlet />
+    </main>
   );
 }
