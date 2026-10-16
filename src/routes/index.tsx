@@ -64,7 +64,7 @@ function Index() {
             </div>
           </div>
           <div className="hidden justify-self-end lg:block animate-rise delay-4">
-            <div className="glass w-80 rounded-3xl p-6 text-primary-foreground shadow-lift animate-floaty">
+            <div className="glass w-80 rounded-3xl !bg-primary/75 p-6 text-primary-foreground shadow-lift animate-floaty">
               <div className="flex items-center gap-3">
                 <span className="grid size-11 place-items-center rounded-2xl bg-gold text-gold-foreground"><CalendarClock className="size-5" /></span>
                 <div><p className="font-display text-2xl leading-none">Book online</p><p className="text-sm text-primary-foreground/70">In just four simple steps</p></div>
@@ -171,7 +171,7 @@ function Index() {
         <figure className="relative">
           <div aria-hidden className="absolute -inset-4 -z-10 rotate-3 rounded-[2.5rem] bg-accent/40" />
           <div className="img-zoom rounded-[2rem] shadow-lift"><img src={familyImg} alt="Family embracing their grandmother at home" loading="lazy" width={1200} height={912} className="aspect-[4/3] w-full object-cover" /></div>
-          <div className="glass absolute -bottom-6 -right-4 hidden items-center gap-3 rounded-2xl bg-card/90 p-4 shadow-lift sm:flex animate-floaty"><HandHeart className="size-8 text-gold" /><div><p className="font-display text-xl leading-none text-primary">Peace of mind</p><p className="text-xs text-muted-foreground">for the whole family</p></div></div>
+          <div className="absolute -bottom-6 -right-4 hidden items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-lift sm:flex animate-floaty"><HandHeart className="size-8 text-gold" /><div><p className="font-display text-xl leading-none text-primary">Peace of mind</p><p className="text-xs text-muted-foreground">for the whole family</p></div></div>
         </figure>
         <div>
           <p className="eyebrow">For families</p>
