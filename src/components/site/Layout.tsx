@@ -3,7 +3,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import * as Icons from "lucide-react";
 import { Menu, X, MessageCircle, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SITE, WA, whatsappLink } from "@/lib/site";
+import { SITE, WA, whatsappLink, telHref } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 export function ServiceIcon({ name, className }: { name: string; className?: string }) {
@@ -145,7 +145,7 @@ export function SiteFooter() {
         <div>
           <p className="eyebrow">Get in touch</p>
           <ul className="mt-4 space-y-2 text-sm text-primary-foreground/80">
-            <li>{SITE.phone}</li>
+            <li>{telHref() ? <a href={telHref()!} className="hover:text-gold">{SITE.phone}</a> : SITE.phone}</li>
             <li>{SITE.email}</li>
             <li><Link to="/book" className="hover:text-gold">Book a service</Link></li>
             <li><Link to="/quote" className="hover:text-gold">Get a free quote</Link></li>

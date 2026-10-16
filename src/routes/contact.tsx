@@ -4,7 +4,7 @@ import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHero, WhatsAppButton } from "@/components/site/Layout";
 import { Field, inputCls } from "@/components/site/ServicePicker";
-import { SERVICES, SITE } from "@/lib/site";
+import { SERVICES, SITE, telHref } from "@/lib/site";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
