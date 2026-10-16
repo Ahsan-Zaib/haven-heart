@@ -47,19 +47,32 @@ function Index() {
     <>
       {/* Hero */}
       <section className="relative isolate overflow-hidden">
-        <img src={hero} alt="Older woman sharing tea and laughter with a Haven & Heart companion" width={1600} height={1104} className="absolute inset-0 -z-10 h-full w-full object-cover" />
+        <img src={hero} alt="Older woman sharing tea and laughter with a Haven & Heart companion" width={1600} height={1104} className="absolute inset-0 -z-10 h-full w-full object-cover animate-kenburns" />
+        <div aria-hidden className="pointer-events-none absolute -left-32 top-1/3 -z-10 size-[28rem] rounded-full bg-gold/20 blur-3xl animate-blob" />
         <div className="absolute inset-0 -z-10 bg-hero-overlay" />
-        <div className="container-x py-24 md:py-36">
+        <div className="container-x grid items-center gap-12 py-24 md:py-36 lg:grid-cols-[1.4fr_1fr]">
           <div className="max-w-2xl text-primary-foreground">
-            <p className="eyebrow animate-rise">Care That Feels Like Home</p>
-            <h1 className="mt-4 text-5xl leading-[1.02] md:text-7xl animate-rise">A Little More Care. <em className="text-gold">A Lot More</em> Peace of Mind.</h1>
-            <p className="mt-6 max-w-xl text-lg text-primary-foreground/85 animate-rise">
+            <p className="eyebrow inline-flex items-center gap-2 rounded-full glass px-4 py-2 animate-rise"><span className="size-1.5 rounded-full bg-gold animate-pulse" />Care That Feels Like Home</p>
+            <h1 className="mt-4 text-5xl leading-[1.02] md:text-8xl animate-rise delay-1">A Little More Care. <em className="text-gold-shine">A Lot More</em> Peace of Mind.</h1>
+            <p className="mt-6 max-w-xl text-lg text-primary-foreground/85 animate-rise delay-2">
               From everyday help around the home to compassionate support for older adults, Haven &amp; Heart is here to make life safer, easier, and more comfortable for you and the people you love.
             </p>
-            <div className="mt-9 flex flex-wrap gap-3 animate-rise">
-              <Button asChild variant="gold" size="xl"><Link to="/book">Book a Service</Link></Button>
+            <div className="mt-9 flex flex-wrap gap-3 animate-rise delay-3">
+              <Button asChild variant="gold" size="xl" className="btn-shine"><Link to="/book">Book a Service</Link></Button>
               <Button asChild variant="heroOutline" size="xl"><Link to="/quote">Get a Free Quote</Link></Button>
               <WhatsAppButton variant="heroOutline" size="xl">Speak to Our Team</WhatsAppButton>
+            </div>
+          </div>
+          <div className="hidden justify-self-end lg:block animate-rise delay-4">
+            <div className="glass w-80 rounded-3xl p-6 text-primary-foreground shadow-lift animate-floaty">
+              <div className="flex items-center gap-3">
+                <span className="grid size-11 place-items-center rounded-2xl bg-gold text-gold-foreground"><CalendarClock className="size-5" /></span>
+                <div><p className="font-display text-2xl leading-none">Book online</p><p className="text-sm text-primary-foreground/70">In just four simple steps</p></div>
+              </div>
+              <ul className="mt-5 space-y-2.5 text-sm">
+                {STEPS.map((s, i) => (<li key={s.t} className="flex items-center gap-3"><span className="grid size-6 place-items-center rounded-full border border-gold/60 text-xs text-gold">{i + 1}</span>{s.t}</li>))}
+              </ul>
+              <Link to="/quote" className="mt-5 flex items-center justify-between rounded-2xl bg-primary-foreground/10 px-4 py-3 text-sm font-semibold transition-colors hover:bg-primary-foreground/20">See an instant estimate <ArrowRight className="size-4 text-gold" /></Link>
             </div>
           </div>
         </div>
@@ -83,21 +96,24 @@ function Index() {
             { title: "Home Services", img: homeImg, list: home, desc: "Cleaning, laundry, meals, errands and the little jobs that keep a home running." },
             { title: "Senior Support", img: seniorImg, list: senior, desc: "Friendly, non-medical companionship and everyday help that supports independence." },
           ].map((c) => (
-            <article key={c.title} className="overflow-hidden rounded-[1.75rem] bg-card shadow-soft">
-              <img src={c.img} alt={c.title} loading="lazy" width={1200} height={912} className="h-64 w-full object-cover" />
+            <article key={c.title} className="card-lift group overflow-hidden rounded-[2rem] bg-card shadow-soft">
+              <div className="img-zoom relative">
+              <img src={c.img} alt={c.title} loading="lazy" width={1200} height={912} className="h-72 w-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/70 via-transparent to-transparent" />
+              <h3 className="absolute bottom-5 left-8 text-4xl text-primary-foreground">{c.title}</h3>
+              </div>
               <div className="p-8">
-                <h3 className="text-3xl text-primary">{c.title}</h3>
-                <p className="mt-2 text-muted-foreground">{c.desc}</p>
+                <p className=" text-muted-foreground">{c.desc}</p>
                 <ul className="mt-6 space-y-3">
                   {c.list.map((s) => (
                     <li key={s.slug}>
-                      <Link to="/services/$slug" params={{ slug: s.slug }} className="group flex items-center gap-4 rounded-xl p-2 transition-colors hover:bg-muted">
-                        <span className="grid size-11 place-items-center rounded-full bg-secondary text-primary"><ServiceIcon name={s.icon} className="size-5" /></span>
+                      <Link to="/services/$slug" params={{ slug: s.slug }} className="group/item flex items-center gap-4 rounded-xl p-2 transition-colors hover:bg-muted">
+                        <span className="grid size-11 place-items-center rounded-full bg-secondary text-primary transition-colors duration-300 group-hover/item:bg-primary group-hover/item:text-gold"><ServiceIcon name={s.icon} className="size-5" /></span>
                         <span className="flex-1">
                           <span className="block font-semibold">{s.name}</span>
                           <span className="block text-sm text-muted-foreground">{s.short}</span>
                         </span>
-                        <ArrowRight className="size-4 text-gold transition-transform group-hover:translate-x-1" />
+                        <ArrowRight className="size-4 text-gold transition-transform group-hover/item:translate-x-1" />
                       </Link>
                     </li>
                   ))}
@@ -110,18 +126,19 @@ function Index() {
       </section>
 
       {/* Why */}
-      <section className="bg-secondary/60 py-24">
-        <div className="container-x">
+      <section className="grain relative isolate overflow-hidden bg-forest py-28 text-primary-foreground">
+        <div aria-hidden className="pointer-events-none absolute -right-20 top-0 -z-10 size-96 rounded-full bg-gold/15 blur-3xl animate-blob" />
+        <div className="container-x relative">
           <div className="max-w-2xl">
             <p className="eyebrow">Why Haven &amp; Heart</p>
-            <h2 className="mt-3 text-4xl text-primary md:text-5xl">The kind of help you'd want for your own family.</h2>
+            <h2 className="mt-3 text-4xl md:text-6xl">The kind of help you'd want for your own family.</h2>
           </div>
           <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {WHY.map((w) => (
-              <div key={w.t} className="card-lift rounded-2xl bg-card p-6 shadow-soft">
-                <w.icon className="size-7 text-gold" />
-                <h3 className="mt-4 font-sans text-lg font-semibold text-primary">{w.t}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{w.d}</p>
+              <div key={w.t} className="card-lift group glass rounded-3xl p-7 hover:bg-primary-foreground/10">
+                <span className="grid size-12 place-items-center rounded-2xl bg-gold/15 text-gold transition-all duration-500 group-hover:rotate-6 group-hover:bg-gold group-hover:text-gold-foreground"><w.icon className="size-6" /></span>
+                <h3 className="mt-5 font-sans text-lg font-semibold">{w.t}</h3>
+                <p className="mt-1.5 text-sm text-primary-foreground/70">{w.d}</p>
               </div>
             ))}
           </div>
@@ -134,23 +151,28 @@ function Index() {
           <p className="eyebrow">How it works</p>
           <h2 className="mt-3 text-4xl text-primary md:text-5xl">Simple from the very first step.</h2>
         </div>
-        <ol className="mt-14 grid gap-6 md:grid-cols-4">
+        <ol className="relative mt-16 grid gap-6 md:grid-cols-4">
+          <span aria-hidden className="absolute left-0 right-0 top-12 hidden h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent md:block" />
           {STEPS.map((s, i) => (
-            <li key={s.t} className="relative rounded-2xl border border-border bg-card p-7">
-              <span className="font-display text-5xl text-gold">0{i + 1}</span>
+            <li key={s.t} className="card-lift group relative rounded-3xl border border-border bg-card p-7 shadow-soft">
+              <span className="relative grid size-14 place-items-center rounded-full bg-primary font-display text-2xl text-gold ring-8 ring-background transition-transform duration-500 group-hover:scale-110">0{i + 1}</span>
               <h3 className="mt-3 font-sans text-lg font-semibold text-primary">{s.t}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{s.d}</p>
             </li>
           ))}
         </ol>
         <div className="mt-10 text-center">
-          <Button asChild variant="hero" size="xl"><Link to="/quote">Let's Get Started <ArrowRight className="size-4" /></Link></Button>
+          <Button asChild variant="hero" size="xl" className="btn-shine"><Link to="/quote">Let's Get Started <ArrowRight className="size-4" /></Link></Button>
         </div>
       </section>
 
       {/* Family */}
-      <section className="container-x grid items-center gap-12 pb-8 lg:grid-cols-2">
-        <img src={familyImg} alt="Family embracing their grandmother at home" loading="lazy" width={1200} height={912} className="aspect-[4/3] w-full rounded-[2rem] object-cover shadow-lift" />
+      <section className="container-x grid items-center gap-16 py-16 lg:grid-cols-2">
+        <figure className="relative">
+          <div aria-hidden className="absolute -inset-4 -z-10 rotate-3 rounded-[2.5rem] bg-accent/40" />
+          <div className="img-zoom rounded-[2rem] shadow-lift"><img src={familyImg} alt="Family embracing their grandmother at home" loading="lazy" width={1200} height={912} className="aspect-[4/3] w-full object-cover" /></div>
+          <div className="glass absolute -bottom-6 -right-4 hidden items-center gap-3 rounded-2xl bg-card/90 p-4 shadow-lift sm:flex animate-floaty"><HandHeart className="size-8 text-gold" /><div><p className="font-display text-xl leading-none text-primary">Peace of mind</p><p className="text-xs text-muted-foreground">for the whole family</p></div></div>
+        </figure>
         <div>
           <p className="eyebrow">For families</p>
           <h2 className="mt-3 text-4xl text-primary md:text-5xl">Reassurance, even from a distance.</h2>
