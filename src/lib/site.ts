@@ -18,6 +18,11 @@ export const SITE = {
   serviceAreas: [] as string[], // PLACEHOLDER — e.g. ["SW1", "SW3"] postcode prefixes
 };
 
+export function telHref(): string | null {
+  const digits = SITE.phone.replace(/[^\d+]/g, "");
+  return digits.replace(/\D/g, "").length >= 7 ? `tel:${digits}` : null;
+}
+
 export function whatsappLink(message: string) {
   const text = encodeURIComponent(message);
   return SITE.whatsappNumber

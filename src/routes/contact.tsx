@@ -57,7 +57,11 @@ function Contact() {
         </form>
         <aside className="space-y-4">
           <div className="space-y-4 rounded-[1.75rem] bg-primary p-7 text-primary-foreground">
-            <p className="flex gap-3"><Phone className="size-5 text-gold" />{SITE.phone}</p>
+            {telHref() ? (
+              <a href={telHref()!} className="flex gap-3 hover:text-gold"><Phone className="size-5 text-gold" />{SITE.phone}</a>
+            ) : (
+              <p className="flex gap-3"><Phone className="size-5 text-gold" />{SITE.phone}</p>
+            )}
             <p className="flex gap-3"><Mail className="size-5 text-gold" />{SITE.email}</p>
             <div className="flex gap-3"><Clock className="size-5 text-gold" /><div className="text-sm">{SITE.hours.map((h) => <p key={h.days}>{h.days}: {h.time}</p>)}</div></div>
             <WhatsAppButton variant="heroOutline" className="w-full">Chat on WhatsApp</WhatsAppButton>
