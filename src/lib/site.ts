@@ -6,9 +6,9 @@ export const SITE = {
   name: "Haven & Heart",
   tagline: "Care That Feels Like Home.",
   supporting: "Reliable Home Services. Compassionate Senior Support.",
-  // PLACEHOLDER — official WhatsApp number in international format, digits only (e.g. 447700900123).
-  whatsappNumber: "",
-  phone: "Phone number coming soon", // PLACEHOLDER
+  // DEMO numbers for testing the call and WhatsApp buttons — replace with the real numbers before launch.
+  whatsappNumber: "447700900123",
+  phone: "+44 20 7946 0958", // DEMO
   email: "hello@havenandheart.example", // PLACEHOLDER
   hours: [
     { days: "Monday – Friday", time: "To be confirmed" }, // PLACEHOLDER
