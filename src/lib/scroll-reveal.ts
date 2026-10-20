@@ -1,54 +1,80 @@
-/** Enhance static page copy only; never touch controls or editable fields. */
+import { animate, inView, scroll } from "framer-motion";
+
+const EASE = [0.16, 1, 0.3, 1] as const;
+const HIDDEN = "perspective(900px) translateY(40px) rotateX(16deg)";
+const SHOWN = "perspective(900px) translateY(0px) rotateX(0deg)";
+const SELECTOR = "section h2, section h3, section p, section img, section article, section figure, section .card-lift, section li, section .reveal-me";
+
+/**
+ * Framer Motion scroll entrances (once), 3D hover tilt and light parallax.
+ * Enhances static copy only; never touches forms or dialogs.
+ */
 export function setupScrollReveals(root: HTMLElement) {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return () => {};
+  const stops: Array<() => void> = [];
+  const restores: Array<() => void> = [];
 
-  const restored: Array<() => void> = [];
-  const targets = Array.from(root.querySelectorAll<HTMLElement>("section h2, section h3, section p, section img, section .reveal-me"))
-    .filter((el) => !el.closest("[data-no-reveal], form, [role='dialog']"));
-  const observed = new Map<Element, HTMLElement>();
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      (observed.get(entry.target) ?? entry.target).classList.add("is-in");
-      observer.unobserve(entry.target);
-    });
-  }, { rootMargin: "0px 0px -6% 0px", threshold: 0.12 });
+  const all = Array.from(root.querySelectorAll<HTMLElement>(SELECTOR))
+    .filter((el) => !el.closest("[data-no-reveal], form, [role='dialog'], header, nav"));
+  const set = new Set(all);
+  // Animate the outermost target only, so cards move as a unit.
+  const targets = all.filter((el) => {
+    for (let p = el.parentElement; p && p !== root; p = p.parentElement) if (set.has(p)) return false;
+    return el.getBoundingClientRect().top > window.innerHeight * 0.94 && !el.classList.contains("animate-kenburns");
+  });
+
+  // Stagger: elements entering in the same frame queue one after another.
+  let batch = 0;
+  let frame = 0;
+  const nextDelay = () => {
+    if (!frame) frame = requestAnimationFrame(() => { batch = 0; frame = 0; });
+    return Math.min(batch++ * 0.09, 0.6);
+  };
 
   targets.forEach((el) => {
-    if (el.getBoundingClientRect().top < window.innerHeight * 0.94) return;
-    if (el.tagName === "IMG") {
-      el.classList.add("reveal-image");
-      restored.push(() => el.classList.remove("reveal-image", "is-in"));
-    } else {
-      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
-      const nodes: Text[] = [];
-      while (walker.nextNode()) {
-        const node = walker.currentNode;
-        if (node instanceof Text && node.textContent?.trim() && !node.parentElement?.closest("a, button, svg")) nodes.push(node);
-      }
-      let index = 0;
-      nodes.forEach((node) => {
-        const wrapper = document.createElement("span");
-        wrapper.className = "reveal-copy";
-        (node.textContent ?? "").split(/(\s+)/).forEach((part) => {
-          if (!part.trim()) { wrapper.append(document.createTextNode(part)); return; }
-          const word = document.createElement("span");
-          word.className = "reveal-word";
-          word.textContent = part;
-          word.style.setProperty("--word-delay", `${Math.min(index * 28, 650)}ms`);
-          index += 1;
-          wrapper.append(word);
-        });
-        node.replaceWith(wrapper);
-        restored.push(() => wrapper.replaceWith(node));
-      });
-      el.classList.add("reveal-text");
-      restored.push(() => el.classList.remove("reveal-text", "is-in"));
-    }
-    // Clipped images have no intersection area until revealed; watch their frame.
+    const prev = { o: el.style.opacity, t: el.style.transform };
+    el.style.opacity = "0";
+    el.style.transform = HIDDEN;
+    el.style.transformOrigin = "50% 100%";
+    restores.push(() => { el.style.opacity = prev.o; el.style.transform = prev.t; });
     const trigger = el.tagName === "IMG" ? el.parentElement ?? el : el;
-    observed.set(trigger, el);
-    observer.observe(trigger);
+    stops.push(inView(trigger, () => {
+      animate(el, { opacity: [0, 1], transform: [HIDDEN, SHOWN] }, { duration: 0.75, ease: EASE, delay: nextDelay() })
+        .then(() => { el.style.transform = ""; });
+    }, { margin: "0px 0px -8% 0px", amount: 0.1 }));
   });
-  return () => { observer.disconnect(); restored.reverse().forEach((restore) => restore()); };
+
+  // Parallax on hero/background imagery and decorative glows (uses `translate` so CSS transforms keep running).
+  root.querySelectorAll<HTMLElement>("section img.absolute, section .animate-blob").forEach((el) => {
+    const section = el.closest("section");
+    if (!section) return;
+    const range = el.tagName === "IMG" ? 90 : -70;
+    stops.push(scroll((p: number) => { el.style.translate = `0 ${(p * range).toFixed(1)}px`; }, { target: section, offset: ["start start", "end start"] }));
+    restores.push(() => { el.style.translate = ""; });
+  });
+
+  // Subtle 3D hover tilt on cards and images (pointer devices only).
+  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    root.querySelectorAll<HTMLElement>(".card-lift, .img-zoom").forEach((el) => {
+      if (el.closest("form")) return;
+      const move = (e: PointerEvent) => {
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        el.style.transition = "transform .2s ease-out, box-shadow .3s ease-out";
+        el.style.transform = `perspective(900px) translateY(-6px) rotateX(${(-y * 6).toFixed(2)}deg) rotateY(${(x * 6).toFixed(2)}deg)`;
+        el.style.boxShadow = "0 24px 50px -24px hsl(160 35% 15% / .35)";
+      };
+      const leave = () => {
+        el.style.transition = "transform .6s cubic-bezier(.16,1,.3,1), box-shadow .6s ease-out";
+        el.style.transform = "";
+        el.style.boxShadow = "";
+      };
+      el.addEventListener("pointermove", move);
+      el.addEventListener("pointerleave", leave);
+      stops.push(() => { el.removeEventListener("pointermove", move); el.removeEventListener("pointerleave", leave); leave(); });
+    });
+  }
+
+  return () => { if (frame) cancelAnimationFrame(frame); stops.forEach((s) => s()); restores.forEach((r) => r()); };
 }
