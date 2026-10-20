@@ -5,10 +5,11 @@ export function setupScrollReveals(root: HTMLElement) {
   const restored: Array<() => void> = [];
   const targets = Array.from(root.querySelectorAll<HTMLElement>("section h2, section h3, section p, section img, section .reveal-me"))
     .filter((el) => !el.closest("[data-no-reveal], form, [role='dialog']"));
+  const observed = new Map<Element, HTMLElement>();
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
-      entry.target.classList.add("is-in");
+      (observed.get(entry.target) ?? entry.target).classList.add("is-in");
       observer.unobserve(entry.target);
     });
   }, { rootMargin: "0px 0px -6% 0px", threshold: 0.12 });
@@ -44,7 +45,10 @@ export function setupScrollReveals(root: HTMLElement) {
       el.classList.add("reveal-text");
       restored.push(() => el.classList.remove("reveal-text", "is-in"));
     }
-    observer.observe(el);
+    // Clipped images have no intersection area until revealed; watch their frame.
+    const trigger = el.tagName === "IMG" ? el.parentElement ?? el : el;
+    observed.set(trigger, el);
+    observer.observe(trigger);
   });
   return () => { observer.disconnect(); restored.reverse().forEach((restore) => restore()); };
 }
