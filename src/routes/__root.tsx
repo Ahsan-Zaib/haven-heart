@@ -139,7 +139,10 @@ function PageShell() {
     window.scrollTo({ top: 0 });
     const main = document.querySelector<HTMLElement>("main");
     if (!main) return;
-    return setupScrollReveals(main);
+    // Let lazy route boundaries finish hydrating before enhancing their text nodes.
+    let cleanup: (() => void) | undefined;
+    const timer = window.setTimeout(() => { cleanup = setupScrollReveals(main); }, 250);
+    return () => { window.clearTimeout(timer); cleanup?.(); };
   }, [pathname]);
   return (
     <main key={pathname} className="animate-page">
