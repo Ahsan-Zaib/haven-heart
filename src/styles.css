@@ -192,11 +192,26 @@
 @utility delay-3 { animation-delay: .36s; }
 @utility delay-4 { animation-delay: .5s; }
 
-/* Scroll reveal (class added by JS so content stays visible without it) */
-.reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s var(--ease-out), transform .9s var(--ease-out); transition-delay: var(--rd, 0s); }
-.reveal.is-in { opacity: 1; transform: none; }
+/* Progressive word composition and photographic curtain reveals. */
+.reveal-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(.65em) rotate(2deg);
+  filter: blur(5px);
+  transition: opacity .65s var(--ease-out), transform .85s var(--ease-out), filter .8s var(--ease-out);
+  transition-delay: var(--word-delay, 0ms);
+}
+.reveal-text.is-in .reveal-word { opacity: 1; transform: none; filter: none; }
+.reveal-image {
+  clip-path: inset(0 0 100% 0 round 6px);
+  opacity: .35;
+  filter: saturate(.5);
+  transition: clip-path 1.35s cubic-bezier(.16,1,.3,1), opacity 1s ease, filter 1.4s ease;
+}
+.reveal-image.is-in { clip-path: inset(0 0 0 0 round 0px); opacity: 1; filter: none; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-  .reveal { opacity: 1; transform: none; }
+  .reveal-word, .reveal-image { opacity: 1; transform: none; filter: none; clip-path: none; }
+  html { scroll-behavior: auto; }
 }

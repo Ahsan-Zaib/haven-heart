@@ -9,3 +9,4 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 - Business settings, services and sample pricing live in one config module (src/lib/site.ts) so the owner-editable values have a single source until an admin backend exists.
+- Scroll entrances are progressive enhancements managed by one shared cleanup-safe helper; exclude forms and respect reduced motion to preserve reading and input flows.
