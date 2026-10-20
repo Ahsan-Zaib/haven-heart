@@ -13,6 +13,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { setupScrollReveals } from "@/lib/scroll-reveal";
 import { SiteHeader, SiteFooter, FloatingWhatsApp } from "@/components/site/Layout";
 
 function NotFoundComponent() {
@@ -132,26 +133,16 @@ function RootComponent() {
   );
 }
 
-const REVEAL_SEL = "main section h2, main section article, main section .card-lift, main section ol > li, main section figure, main section .reveal-me";
-
 function PageShell() {
   const pathname = useLocation({ select: (l) => l.pathname });
   useEffect(() => {
     window.scrollTo({ top: 0 });
-    const els = Array.from(document.querySelectorAll<HTMLElement>(REVEAL_SEL)).filter((el) => !el.closest("[data-no-reveal]"));
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } }),
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.08 },
-    );
-    els.forEach((el) => {
-      const r = el.getBoundingClientRect();
-      if (r.top < window.innerHeight * 0.9) return; // already visible: leave alone
-      const sibs = el.parentElement ? Array.from(el.parentElement.children) : [];
-      el.style.setProperty("--rd", `${Math.min(sibs.indexOf(el), 6) * 0.08}s`);
-      el.classList.add("reveal");
-      io.observe(el);
-    });
-    return () => io.disconnect();
+    const main = document.querySelector<HTMLElement>("main");
+    if (!main) return;
+    // Let lazy route boundaries finish hydrating before enhancing their text nodes.
+    let cleanup: (() => void) | undefined;
+    const timer = window.setTimeout(() => { cleanup = setupScrollReveals(main); }, 250);
+    return () => { window.clearTimeout(timer); cleanup?.(); };
   }, [pathname]);
   return (
     <main key={pathname} className="animate-page">
